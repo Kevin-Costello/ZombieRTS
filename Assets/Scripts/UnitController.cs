@@ -8,7 +8,9 @@ public class UnitController : MonoBehaviour
     public NavMeshAgent navAgent;
     public GameObject bloodEffect;
     public int attackRange = 10;
+    public bool isSelected = false;
     public bool isDead = false;
+    public bool isMoving = false;
     public GameObject bullet;
     public int health = 3;
     public float damageTimeout = 1.0f;
@@ -36,12 +38,22 @@ public class UnitController : MonoBehaviour
             
         }
 
+        if(navAgent.velocity == Vector3.zero)
+        {
+            isMoving = false;
+        }
+        else
+        {
+            isMoving = true;
+        }
+    
     }
 
     public void MoveUnit(Vector3 destination)
     {
         currentTarget = null;
         navAgent.destination = destination;
+
     }
 
     public void SetSelected(bool isSelected)

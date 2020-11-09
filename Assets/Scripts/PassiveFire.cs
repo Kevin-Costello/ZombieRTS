@@ -6,27 +6,48 @@ public class PassiveFire : MonoBehaviour
 {
     //NOT WORKING
 
-    private bool isTargeting = false;
-    // Start is called before the first frame update
-
-    private void OnTriggerStay(Collider zombie)
+    //private bool isTargeting = false;
+    float distance;
+    float nearestDistance = 100000;
+    GameObject nearestTarget;
+    private void Update()
     {
-        if (zombie.gameObject.CompareTag("Enemy") && isTargeting == false)
+        CheckCollisions();
+    }
+
+    private void CheckCollisions()
+    {
+        Collider[] objectsInRadius = Physics.OverlapSphere(transform.position, 10);
+        UnitController unitController = gameObject.GetComponent<UnitController>();
+        foreach (var hitCollider in objectsInRadius)
         {
-            isTargeting = true;
-            UnitController unit = gameObject.GetComponentInParent<UnitController>();
-            unit.currentTarget = zombie.transform;
+            if(unitController.isMoving == false)
+            {
+                if (hitCollider.gameObject.CompareTag("Enemy"))
+                {
+                    distance = (transform.position - hitCollider.transform.position).sqrMagnitude;
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestTarget = hitCollider.gameObject;
+                        unitController.currentTarget = nearestTarget.transform;
+                    }
+
+                }
+            }
+        }
+
+        if(unitController.currentTarget == null)
+        {
+            nearestDistance = 100000;
         }
     }
 
-    private void OnTriggerExit(Collider zombie)
+    /*
+    public void OnDrawGizmos()
     {
-        if (zombie.gameObject.CompareTag("Enemy"))
-        {
-            isTargeting = false;
-            UnitController unit = gameObject.GetComponentInParent<UnitController>();
-            unit.currentTarget = null;
-
-        }
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, 10);
     }
+    */
 }

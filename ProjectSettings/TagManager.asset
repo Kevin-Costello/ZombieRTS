@@ -11,6 +11,8 @@ TagManager:
   - Baby
   - RangeChecker
   - MoveMarker
+  - Bullet
+  - Barrel
   layers:
   - Default
   - TransparentFX

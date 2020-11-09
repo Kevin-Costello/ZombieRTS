@@ -54,6 +54,8 @@ public class UnitSelector : MonoBehaviour
                     if (IsWithinRect(selectableUnits.transform))
                     {
                         SelectUnit(selectableUnits.gameObject.GetComponent<UnitController>(), true);
+                        UnitController controller = selectableUnits.GetComponent<UnitController>();
+                        controller.isSelected = true;
                     }
                 }
                 isDragging = false;
@@ -80,13 +82,35 @@ public class UnitSelector : MonoBehaviour
                         Instantiate(moveMarker, hit.point, Quaternion.identity);
                     }
                 }
-                if (hit.transform.CompareTag("Enemy"))
+                if (hit.transform.CompareTag("Enemy") || hit.transform.CompareTag("Barrel"))
                 {
                     foreach (var selectableObject in selectedUnits)
                     {
                         selectableObject.SetTarget(hit.transform);
+                        GameObject[] oldMarkers = GameObject.FindGameObjectsWithTag("MoveMarker");
+                        foreach (GameObject marker in oldMarkers)
+                        {
+                            Destroy(marker);
+                        }
                     }
                 }
+            }
+        }
+
+        if(Input.GetKey(KeyCode.Space))
+        {
+           foreach(var selectedUnits in selectedUnits)
+            {
+                GameObject rangePreview = selectedUnits.transform.GetChild(1).gameObject;
+                rangePreview.SetActive(true);
+            }
+        }
+        else
+        {
+            foreach (var selectedUnits in selectedUnits)
+            {
+                GameObject rangePreview = selectedUnits.transform.GetChild(1).gameObject;
+                rangePreview.SetActive(false);
             }
         }
     }
@@ -113,7 +137,11 @@ public class UnitSelector : MonoBehaviour
 
         for(int i = 0; i < selectedUnits.Count; i++)
         {
+            UnitController controller = selectedUnits[i].GetComponent<UnitController>();
+            controller.isSelected = false;
             selectedUnits[i].SetSelected(false);
+            GameObject rangePreview = selectedUnits[i].transform.GetChild(1).gameObject;
+            rangePreview.SetActive(false);
         }
         selectedUnits.Clear();
     }
